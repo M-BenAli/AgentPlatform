@@ -5,6 +5,7 @@ import { ThirdwebProvider } from "thirdweb/react";
 import { ThemeProvider } from "./components/theme-provider";
 import Navbar from "./components/Navbar";
 import { cn } from "@/lib/utils";
+import MaxWidthWrapper from "./components/MaxWidthWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, "p-4")}>
+      <body className={inter.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -28,8 +29,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ThirdwebProvider>
-            <Navbar />
-            {children}
+            <MaxWidthWrapper>
+              <Navbar />
+              {children}
+            </MaxWidthWrapper>
           </ThirdwebProvider>
         </ThemeProvider>
       </body>
