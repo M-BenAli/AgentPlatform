@@ -15,7 +15,7 @@ export const contract = getContract({
   // the chain the contract is deployed on
   chain: galadrielChain,
   // the contract's address
-  address: "0xfc42fA684a675C6e4F9933f2Ed3DdBC0D06a458c",
+  address: "0xd7fdb1dFDBB3B1b52e1Bd53F6683a799ED720f86",
   // OPTIONAL: the contract's abi
   //   abi: [...],
 });
