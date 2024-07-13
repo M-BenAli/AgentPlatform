@@ -1,16 +1,7 @@
-import { createThirdwebClient } from "thirdweb";
-import { ThirdwebProvider, ConnectButton } from "thirdweb/react";
-
-
-const client = createThirdwebClient({
-  clientId: `${process.env.NEXT_THIRDWEB_API_CLIENT_KEY}`
-});
-
-
 export default function App() {
   return (
-    <ThirdwebProvider>
-      <ConnectButton client={client} />
-    </ThirdwebProvider>
+    <div className="w-full h-screen flex items-center justify-center mx-auto">
+      <h1>hello world</h1>
+    </div>
   );
 }
