@@ -1,3 +1,4 @@
+import Cards from "./components/Cards";
 import Politician from "./components/Politician";
 
 export default function App() {
@@ -7,6 +8,7 @@ export default function App() {
         Take a look at the politician decision
       </h1>
       <Politician />
+      <Cards />
     </div>
   );
 }

@@ -8,7 +8,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 import { useState } from "react";
+import gerolf from "@/public/gerolf.jpg";
+import pascal from "@/public/pascal.jpg";
+import marc from "@/public/marc.jpg";
+import geert from "@/public/geert.jpg";
+import saskia from "@/public/saskia.jpg";
+
+const imageMapping = {
+  gerolfAnnemans: gerolf,
+  pascalArimont: pascal,
+  marcBotenga: marc,
+  geertBourgeois: geert,
+  saskiaBricmont: saskia,
+};
+
+type PoliticianKey = keyof typeof imageMapping;
 
 type Props = {};
 const Politician = (props: Props) => {
@@ -16,12 +32,15 @@ const Politician = (props: Props) => {
     null
   );
   const [politicianData, setPoliticianData] = useState<any>(null);
+  const [imageSrc, setImageSrc] = useState<any>(null);
 
   const handleSelect = (value: string) => {
-    setSelectedPolitician(value);
-    console.log(value);
+    const politicianKey = value as PoliticianKey; // Type assertion
+    setSelectedPolitician(politicianKey);
+    setImageSrc(imageMapping[politicianKey]);
+
     // Fetch or set data based on selected politician
-    const data = getPoliticianData(value);
+    const data = getPoliticianData(politicianKey);
     setPoliticianData(data);
   };
 
@@ -31,21 +50,34 @@ const Politician = (props: Props) => {
   };
 
   return (
-    <div>
-      <Select onValueChange={handleSelect}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a Politician" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="number1">Number 1</SelectItem>
-            <SelectItem value="number2">Number 2</SelectItem>
-            <SelectItem value="number3">Number 3</SelectItem>
-            <SelectItem value="number4">Number 4</SelectItem>
-            <SelectItem value="number5">Number 5</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+    <div className="wfull flex flex-col justify-center items-center space-y-4">
+      <div>
+        <Select onValueChange={handleSelect}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a Politician" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="gerolfAnnemans">Gerolf ANNEMANS</SelectItem>
+              <SelectItem value="pascalArimont">Pascal ARIMONT</SelectItem>
+              <SelectItem value="marcBotenga">Marc BOTENGA</SelectItem>
+              <SelectItem value="geertBourgeois">Geert BOURGEOIS</SelectItem>
+              <SelectItem value="saskiaBricmont">Saskia BRICMONT</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      {politicianData && (
+        <div>
+          <Image
+            className="rounded-xl"
+            src={imageSrc}
+            alt=""
+            width={200}
+            height={200}
+          />
+        </div>
+      )}
     </div>
   );
 };
