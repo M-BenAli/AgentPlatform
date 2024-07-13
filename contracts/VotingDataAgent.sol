@@ -3,11 +3,11 @@ pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
-import "./interfaces/IOracle.sol";
+import "./";
 
 // @title Agent
 // @notice This contract interacts with teeML oracle to run agents that perform multiple iterations of querying and responding using a large language model (LLM).
-contract Agent {
+contract VotingDataAgent {
 
     string public prompt;
 
@@ -19,9 +19,19 @@ contract Agent {
         bool is_finished;
     }
 
+    struct Vote {
+        string title;
+        string cid;
+        string voteId;
+        string voteTitle;
+        string[] votesFor;
+        string[] votesAgainst;
+        string[] votesAbstention;
+    }
+
     // @notice Mapping from run ID to AgentRun
     mapping(uint => AgentRun) public agentRuns;
-    uint private agentRunCount;
+    uint public agentRunCount;
 
     // @notice Event emitted when a new agent run is created
     event AgentRunCreated(address indexed owner, uint indexed runId);
@@ -38,6 +48,12 @@ contract Agent {
     // @notice Configuration for the OpenAI request
     IOracle.OpenAiRequest private config;
 
+    // @notice knowledgeBaseCID
+    string public knowledgeBase;
+
+    // @notice stored voting data 
+    string private storedData;
+
     // @param initialOracleAddress Initial address of the oracle contract
     // @param systemPrompt Initial prompt for the system message
     constructor(
@@ -46,7 +62,7 @@ contract Agent {
     ) {
         owner = msg.sender;
         oracleAddress = initialOracleAddress;
-        prompt = systemPrompt;
+        prompt = string.concat("You are an AI agent operating on the following data: ", storedData);
 
         config = IOracle.OpenAiRequest({
             model : "gpt-4-turbo-preview",
@@ -206,5 +222,30 @@ contract Agent {
     // @return True if the strings are equal, false otherwise
     function compareStrings(string memory a, string memory b) private pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
+    }
+
+//    function addVoteToStoredData(Vote memory newVoteData) public onlyOwner {
+//         storedData.push(newVoteData);
+//     }
+
+//     function setStoredData(Vote[] memory newStoredData) public onlyOwner {
+//         storedData = newStoredData;
+//     }
+
+//     function getStoredData() public view returns (Vote[] memory) {
+//         return storedData;
+//     }
+
+//    function addVoteToStoredData(string memory newVoteData) public onlyOwner {
+//         storedData.push(newVoteData);
+//     }
+
+    function setStoredData(string memory newStoredData) public onlyOwner {
+        prompt = string.concat("You are an AI agent operating on the following data: ", newStoredData);
+        storedData = newStoredData;
+    }
+
+    function getStoredData() public view returns (string memory) {
+        return storedData;
     }
 }
