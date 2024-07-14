@@ -1,30 +1,37 @@
-"use client"
+"use client";
 
 /**
  * v0 by Vercel.
  * @see https://v0.dev/t/Lq0avA1TIAS
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { addMessageToAgent, getMessageHistory, runAgentFromContract } from "../actions";
+import {
+  addMessageToAgent,
+  getMessageHistory,
+  runAgentFromContract,
+} from "../actions";
 import Message from "../interfaces/IOracle";
 import LoadingSpinner from "./LoadingSpinner";
 
 export default function AgentChat() {
-
   const [agentRunning, setAgentRunning] = useState<boolean>(false);
-  const [agentId, setAgentId] = useState<bigint>()
-  const [messages, setMessages] = useState<any[]>([])
-  const [newInputMessage, setNewInputMessage] = useState<string>("")
+  const [agentId, setAgentId] = useState<bigint>();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newInputMessage, setNewInputMessage] = useState<string>("");
 
   const prompts = [
     "Give me the votesFor from the data",
     "Provide me with the topic or title of the Vote",
     "Provide me with the Vote of the Member of Parliament ",
-    "You are an expert in EU politics. You must provide a summary of the vote history of a MEP (Member of the European Parliament), on a specific topic. The topic is " + "Gigabit Infrastructure Act" + ". The MEP is " + "6394" + "."
-  ]
+    "You are an expert in EU politics. You must provide a summary of the vote history of a MEP (Member of the European Parliament), on a specific topic. The topic is " +
+      "Gigabit Infrastructure Act" +
+      ". The MEP is " +
+      "6394" +
+      ".",
+  ];
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewInputMessage(event.target.value);
@@ -36,9 +43,15 @@ export default function AgentChat() {
       // console.log(newInputMessage)
       const result = await addMessageToAgent(newInputMessage, agentId!!);
       // console.log("Addedresponse:", { result })
-      const newMessageHistory = [...messages, ({ role: "user", messages: [{ contentType: "text", value: newInputMessage }] })]
-      setMessages(newMessageHistory)
-      setNewInputMessage(''); // Clear the input after sending the message
+      const newMessageHistory = [
+        ...messages,
+        {
+          role: "user",
+          messages: [{ contentType: "text", value: newInputMessage }],
+        },
+      ];
+      setMessages(newMessageHistory);
+      setNewInputMessage(""); // Clear the input after sending the message
     }
   };
 
@@ -58,79 +71,105 @@ export default function AgentChat() {
         let newResponse = agentMessageHistory[agentMessageHistory.length - 1];
         let lastResponse = agentMessageHistory[agentMessageHistory.length - 2];
 
-        await new Promise((resolve) => setTimeout(resolve, 5000)).then(() => console.log("Retrieving chat history again.."));
+        await new Promise((resolve) => setTimeout(resolve, 5000)).then(() =>
+          console.log("Retrieving chat history again..")
+        );
 
         agentMessageHistory = await getMessageHistory(agentIdResult);
-        setMessages(agentMessageHistory)
+        setMessages(agentMessageHistory);
 
-        console.log(agentMessageHistory)
+        console.log(agentMessageHistory);
         newResponse = agentMessageHistory[agentMessageHistory.length - 1];
-        console.log(newResponse)
+        console.log(newResponse);
         lastResponse = agentMessageHistory[agentMessageHistory.length - 2];
         // console.log(lastResponse)
         // console.log(".");
       }
     }
+  };
 
-  }
-
-  
   return (
     <div className="flex flex-col h-screen w-full my-2">
-      {!agentRunning && <Button className={"h-5 mb-5 w-1/4 mx-auto"} onClick={async () => await initializeAgent()}>Run agent</Button>}
-      {agentRunning && <Button className={"bg-red-600 hover:bg-red-600 h-5 mb-5 mx-auto w-1/4"} onClick={() => setAgentRunning(false)}>Stop running agent</Button>}
-      {agentRunning &&
+      {!agentRunning && (
+        <Button
+          className={"h-5 mb-5 w-1/4 mx-auto"}
+          onClick={async () => await initializeAgent()}
+        >
+          Run agent
+        </Button>
+      )}
+      {agentRunning && (
+        <Button
+          className={"bg-red-600 hover:bg-red-600 h-5 mb-5 mx-auto w-1/4"}
+          onClick={() => setAgentRunning(false)}
+        >
+          Stop running agent
+        </Button>
+      )}
+
+      {agentRunning && (
         <div className="bg-secondary w-3/4 mx-auto">
           <header className="bg-primary text-primary-foreground py-4 px-6 shadow">
             {/* <p>2. Interact with it via the AI agent</p> */}
             <h1 className="text-2xl font-bold">Run Agent</h1>
           </header>
           <div className="flex-1 p-6 mx-auto">
-            {
-              messages.length == 0 &&
+            {messages.length == 0 && (
               <>
                 <LoadingSpinner></LoadingSpinner>
                 <p className="text-center my-4">Initializing EU AI Agent..</p>
               </>
-            }
-            {messages != undefined && messages.map((message: any, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-4 my-4 ${message.role === "assistant" ? "justify-end" : ""}`}
-              >
-                {message.role === "assistant" ? (
-                  <>
-                    <div className="bg-primary text-primary-foreground p-4 rounded-lg max-w-[80%]">
-                      <p>{message.messages[0].value}</p>
-                    </div>
-
-                  </>
-                ) : (
-                  <>
-                    <div className="rounded-full bg-muted w-8 h-8 flex items-center justify-center text-muted-foreground">
-                      You
-                    </div>
-                    <div className="bg-card p-4 rounded-lg max-w-[80%]">
-                      <p>{message.messages[0].value}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
+            )}
+            {messages != undefined &&
+              messages.map((message: any, index) => (
+                <div
+                  key={index}
+                  className={`flex items-start gap-4 my-4 ${
+                    message.role === "assistant" ? "justify-end" : ""
+                  }`}
+                >
+                  {message.role === "assistant" ? (
+                    <>
+                      <div className="bg-primary text-primary-foreground p-4 rounded-lg max-w-[80%]">
+                        <p>{message.messages[0].value}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="rounded-full bg-muted w-8 h-8 flex items-center justify-center text-muted-foreground">
+                        You
+                      </div>
+                      <div className="bg-card p-4 overflow-scroll rounded-lg max-w-[80%]">
+                        <p>{message.messages[0].value}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
           </div>
           <div className="bg-secondary border-t px-6 py-4">
             <div className="relative">
-              <Textarea placeholder="Type your message..." className="pr-16 w-full" rows={1} value={newInputMessage} onChange={handleInputChange} />
-              <Button type="submit" size="icon" className="absolute top-1/2 -translate-y-1/2 right-4" onClick={async () => await handleSendMessage()}>
+              <Textarea
+                placeholder="Type your message..."
+                className="pr-16 w-full"
+                rows={1}
+                value={newInputMessage}
+                onChange={handleInputChange}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                className="absolute top-1/2 -translate-y-1/2 right-4"
+                onClick={async () => await handleSendMessage()}
+              >
                 <SendIcon className="w-5 h-5" />
               </Button>
             </div>
           </div>
         </div>
-      }
+      )}
     </div>
-
-  )
+  );
 }
 
 function SendIcon(props: any) {
@@ -150,9 +189,8 @@ function SendIcon(props: any) {
       <path d="m22 2-7 20-4-9-9-4Z" />
       <path d="M22 2 11 13" />
     </svg>
-  )
+  );
 }
-
 
 function XIcon(props: any) {
   return (
@@ -171,5 +209,5 @@ function XIcon(props: any) {
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
     </svg>
-  )
+  );
 }
