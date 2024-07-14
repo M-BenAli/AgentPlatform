@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🤖 AGENTPLATFROM
+
+## Introduction
+
+This repository is a Hackathon project. It was entirely coded during [ETHGlobal Brussels](https://ethglobal.com/events/brussels).
+
+Goal : Bringing transparency in politics by analyzing past votes of a MEP (Member of the European Parliament). The analysis is done by an AI Agent, running in a Trusted Execution Environment (TEE), to guarantee that it brings no biais other than the ones natives to Large Language Models (LLMs).
+
+Everything in this project is Open Source - from the data to the final output, guaranteeing a maximal transparency. 
+
+## 📊 Data
+The data is retrieved from the [Open Data Portal](https://data.europarl.europa.eu/en/developer-corner/opendata-api) maintained by the Europen Parliament 🇪🇺. 
+The data is not well structured, so we had to use differents methods.
+
+#### API
+
+There is an API ([`https://data.europarl.europa.eu/api/v2/`](https://data.europarl.europa.eu/api/v2/)) that was used to retrieve : 
+
+- all plenary meetings of a year,
+- all the things that were voted during this session (title, documents, resolutions, … but **not** the individual votes of each MEP, nor the results of the votes),
+- the title of a documents, based on its ELI id
+
+#### Other sources
+
+[`https://www.europarl.europa.eu/doceo/document//{file_id}_EN.pdf`]() allows to get a file, in the English version, based on its id (e.g. a Directive or a Report)
+
+[`https://www.europarl.europa.eu/doceo/document/{plenary_session_id}-RCV_EN.xml`](https://www.europarl.europa.eu/doceo/document/%7Bfile_id%7D-RCV_EN.xml) allows to get an XML file containing all votes of a planary session. 
+
+In the XML file, we can find the votes of each individual MEP (”for”, “against”, or “abstention”) for each voting of the session. 
+
+By merging the data retrieved from the API with the associated votes results, we can get find who voted for what.
+
+The data is store in the `retrieve_data/data` directory.
+The instruction to retrieve the data are described in `retrieve_data/readme.md`.
+
+## 🤖 AI Agent
+The AI Agent is running on the blockchain [Galadriel 🧙](https://docs.galadriel.com/reference/overview). It works as follows : 
+[include explaination here]
+
+##  🖥️ User Interface
+
 
 ## Getting Started
 
-First, run the development server:
+#### Get the data
+Follow the instructions in `retrieve_data/readme.md`.
+
+#### Install and run the app
+Clone this repository and go to the Next App directory 
+
+```bash
+git clone https://github.com/M-BenAli/AgentPlatform.git
+cd AgentPlatform/src/app
+```
+
+Install the depencies 
+```bash
+npm install
+```
+
+run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file and fill the necessary keys.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### Smart Contract
+Install a wallet (e.g. [Metamask](https://metamask.io/))
 
-## Learn More
+Get some GAL tokens : [Faucet](https://docs.galadriel.com/faucet)
 
-To learn more about Next.js, take a look at the following resources:
+Adress of the AI Agent : `0x...`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Adress of the Oracle : `0x...`
