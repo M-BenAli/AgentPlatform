@@ -40,7 +40,6 @@ def get_request(url) :
 def get_all_results(activity_result_id) :
     download_xml_result_file(activity_result_id)
     results = pd.DataFrame(parse_xml(f"{XML_DIR}/{activity_result_id}-RCV_EN.xml"))
-    print(results)
     return results
 
 
@@ -50,8 +49,6 @@ def get_votes(MTP_ID) :
     target = f"meetings/{MTP_ID}/vote-results"
     parameters = f"format=application%2Fld%2Bjson&offset=0"#&limit=5"
     url = url_endpoint + target + "?" + parameters
-    print("GET" , url)
-
     response = get_request(url)
     json_data = response.json()['data']
 
@@ -64,12 +61,8 @@ def get_votes(MTP_ID) :
             activity_id = vote['activity_id']
             id = activity_id.split("-")[-1]
             activity_label = vote['activity_label']["en"]
-            #print(vote['activity_id'], vote['activity_label']["en"])
             activity_file_id = vote["based_on_a_realization_of"][0].split("/")[-1]
             activity_file_title = get_document_title(activity_file_id)
-            
-            #print("\n===\n")
-            #print(activity_id, "|", activity_label, "\n", "file_id=",activity_file_id, "file_result=", activity_result_id, "\n", "file_title=",activity_file_title)
             result_row = all_results[all_results['Vote_id'] == id]
             if not result_row.empty : 
                 if not result_row.empty:
@@ -193,11 +186,12 @@ def parse_xml(file_path):
 
 
 #1. get plenary session 
-#get_plenary_meetings()
+#plenary_meetings = get_plenary_meetings()
 #Let's start with only one for now : 
-plenary_meetings = ["MTG-PL-2024-04-23"]
+plenary_meetings = ['MTG-PL-2024-01-15', 'MTG-PL-2024-01-16', 'MTG-PL-2024-01-17', 'MTG-PL-2024-01-18', 'MTG-PL-2024-01-25', 'MTG-PL-2024-02-05', 'MTG-PL-2024-02-06', 'MTG-PL-2024-02-07', 'MTG-PL-2024-02-08', 'MTG-PL-2024-02-26', 'MTG-PL-2024-02-27', 'MTG-PL-2024-02-28']
 votes = []
 #2. get all the votes (name, refering data, voting results) for each session
+print("Collecting votes for each session...")
 for session in plenary_meetings : 
     votes += get_votes(session)
 
@@ -212,7 +206,7 @@ with open("data/votes_data/votes.json", "w") as f :
 
 for vote in votes : 
     download_pdf_from_fileId(vote['activity_file_id'])
-    print(vote['activity_id'], vote['activity_label'], "\n", "For: ", len(vote['VotesFor']), "Against: ", len(vote['VotesAgainst']), "Abstention: ", len(vote['VotesAbstention']))
+    print(vote['activity_id'], " | ", vote['activity_label'], "\n", "For: ", len(vote['VotesFor']), "Against: ", len(vote['VotesAgainst']), "Abstention: ", len(vote['VotesAbstention']))
     upload_pdf_to_ipfs(vote['activity_file_id'])
 
 
