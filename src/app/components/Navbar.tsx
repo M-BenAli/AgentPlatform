@@ -6,7 +6,7 @@ type Props = {};
 const Navbar = (props: Props) => {
   return (
     <div className="flex w-full items-center justify-between">
-      <div>Project Name</div>
+      <div>EU Agent Platform</div>
       <div className="flex items-center space-x-4">
         <div>
           <ModeToggle />

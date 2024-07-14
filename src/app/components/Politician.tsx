@@ -51,6 +51,7 @@ const Politician = (props: Props) => {
 
   return (
     <div className="wfull flex flex-col justify-center items-center space-y-4">
+      <p>1. Select the politician data you would like to explore and interact with</p>
       <div>
         <Select onValueChange={handleSelect}>
           <SelectTrigger className="w-[180px]">
