@@ -187,12 +187,13 @@ def parse_xml(file_path):
 
 #1. get plenary session 
 #plenary_meetings = get_plenary_meetings()
-#Let's start with only one for now : 
+#Let's start with only a few for now : 
 plenary_meetings = ['MTG-PL-2024-01-15', 'MTG-PL-2024-01-16', 'MTG-PL-2024-01-17', 'MTG-PL-2024-01-18', 'MTG-PL-2024-01-25', 'MTG-PL-2024-02-05', 'MTG-PL-2024-02-06', 'MTG-PL-2024-02-07', 'MTG-PL-2024-02-08', 'MTG-PL-2024-02-26', 'MTG-PL-2024-02-27', 'MTG-PL-2024-02-28']
 votes = []
 #2. get all the votes (name, refering data, voting results) for each session
 print("Collecting votes for each session...")
 for session in plenary_meetings : 
+    print(session.replace("MTG-PL-", ""))
     votes += get_votes(session)
 
 #2.5 Create a new directory and save the votes in a json file
