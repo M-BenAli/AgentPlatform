@@ -2,17 +2,8 @@ import { readContract } from "thirdweb";
 import { contract } from "./getContract";
 import Message from "./interfaces/IOracle"
 
-// export async function getContractData() {
-//   const data = await readContract({
-//     contract,
-//     method: "function getKnowledgebaseCID() public view returns (string)",
-//     // params: ["0x123..."],
-//   });
-//   console.log(data);
-//   return data;
-// }
-
 export async function runAgentFromContract(userQuery: string, maxIterations: number) {
+
   const data = await readContract({
     contract,
     params: [userQuery, maxIterations],
@@ -37,14 +28,14 @@ export async function getMessageHistory(agentId: bigint) {
   return data;
 }
 
-export async function addMessageToAgent(query: string, agentId: bigint) {
+export async function addMessageToAgent(message: string, runId: bigint) {
   const data: any = await readContract({
     contract,
-    params: [query, agentId],
+    params: [message, runId],
     method: "function addMessage(string memory message, uint runId) public"
   });
 
-  console.log(data)
+  console.log("Added response: ", data)
   return data;
 }
 

@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
-import "./";
+import "./interfaces/IOracle.sol";
 
 // @title Agent
 // @notice This contract interacts with teeML oracle to run agents that perform multiple iterations of querying and responding using a large language model (LLM).
@@ -55,14 +55,13 @@ contract VotingDataAgent {
     string private storedData;
 
     // @param initialOracleAddress Initial address of the oracle contract
-    // @param systemPrompt Initial prompt for the system message
     constructor(
-        address initialOracleAddress,         
-        string memory systemPrompt
+        address initialOracleAddress         
     ) {
         owner = msg.sender;
         oracleAddress = initialOracleAddress;
-        prompt = string.concat("You are an AI agent operating on the following data: ", storedData);
+        
+        prompt = string.concat("You are an expert in EU politics. You are an AI agent operating on the following data: ", storedData);
 
         config = IOracle.OpenAiRequest({
             model : "gpt-4-turbo-preview",
@@ -116,7 +115,7 @@ contract VotingDataAgent {
         IOracle.Message memory systemMessage = createTextMessage("system", prompt);
         run.messages.push(systemMessage);
 
-        IOracle.Message memory newMessage =  createTextMessage("user", query);
+        IOracle.Message memory newMessage = createTextMessage("user", query);
         run.messages.push(newMessage);
 
         uint currentId = agentRunCount;
@@ -216,6 +215,26 @@ contract VotingDataAgent {
         return newMessage;
     }
 
+    // @notice Adds a new message to an existing chat run
+    // @param message The new message to add
+    // @param runId The ID of the chat run
+    function addMessage(string memory message, uint runId) public {
+        AgentRun storage run = agentRuns[runId];
+        // require(
+        //     keccak256(abi.encodePacked(run.messages[run.responsesCount - 1].role)) != keccak256(abi.encodePacked("assistant")),
+        //     "No response to previous message"
+        // );
+        // require(
+        //     run.owner == msg.sender, "Only chat owner can add messages"
+        // );
+
+        IOracle.Message memory newMessage = createTextMessage("user", message);
+        run.messages.push(newMessage);
+        run.responsesCount++;
+
+        IOracle(oracleAddress).createOpenAiLlmCall(runId, config);
+    }
+
     // @notice Compares two strings for equality
     // @param a The first string
     // @param b The second string
@@ -223,22 +242,6 @@ contract VotingDataAgent {
     function compareStrings(string memory a, string memory b) private pure returns (bool) {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
-
-//    function addVoteToStoredData(Vote memory newVoteData) public onlyOwner {
-//         storedData.push(newVoteData);
-//     }
-
-//     function setStoredData(Vote[] memory newStoredData) public onlyOwner {
-//         storedData = newStoredData;
-//     }
-
-//     function getStoredData() public view returns (Vote[] memory) {
-//         return storedData;
-//     }
-
-//    function addVoteToStoredData(string memory newVoteData) public onlyOwner {
-//         storedData.push(newVoteData);
-//     }
 
     function setStoredData(string memory newStoredData) public onlyOwner {
         prompt = string.concat("You are an AI agent operating on the following data: ", newStoredData);
