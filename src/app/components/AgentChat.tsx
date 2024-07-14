@@ -16,7 +16,7 @@ export default function AgentChat() {
 
   const [agentRunning, setAgentRunning] = useState<boolean>(false);
   const [agentId, setAgentId] = useState<bigint>()
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<any[]>([])
   const [newInputMessage, setNewInputMessage] = useState<string>("")
 
   const prompts = [
@@ -26,15 +26,30 @@ export default function AgentChat() {
     "You are an expert in EU politics. You must provide a summary of the vote history of a MEP (Member of the European Parliament), on a specific topic. The topic is " + "Gigabit Infrastructure Act" + ". The MEP is " + "6394" + "."
   ]
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewInputMessage(event.target.value);
+  };
+
+  const handleSendMessage = async () => {
+    if (newInputMessage.trim() && agentId) {
+      // await addMessage(newInputMessage);
+      // console.log(newInputMessage)
+      const result = await addMessageToAgent(newInputMessage, agentId!!);
+      // console.log("Addedresponse:", { result })
+      const newMessageHistory = [...messages, ({ role: "user", messages: [{ contentType: "text", value: newInputMessage }] })]
+      setMessages(newMessageHistory)
+      setNewInputMessage(''); // Clear the input after sending the message
+    }
+  };
+
   const initializeAgent = async () => {
     setAgentRunning(true);
     let agentIdResult = await runAgentFromContract(prompts[4], 10);
-    console.log(agentIdResult)
+    // console.log(agentIdResult)
 
     agentIdResult = agentIdResult - BigInt(1);
     setAgentId(agentIdResult);
-    console.log(agentId)
-
+    // console.log(agentId)
 
     if (agentId) {
       let agentMessageHistory: Message[] = await getMessageHistory(agentId);
@@ -43,7 +58,8 @@ export default function AgentChat() {
         let newResponse = agentMessageHistory[agentMessageHistory.length - 1];
         let lastResponse = agentMessageHistory[agentMessageHistory.length - 2];
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 5000)).then(() => console.log("Retrieving chat history again.."));
+
         agentMessageHistory = await getMessageHistory(agentIdResult);
         setMessages(agentMessageHistory)
 
@@ -51,21 +67,14 @@ export default function AgentChat() {
         newResponse = agentMessageHistory[agentMessageHistory.length - 1];
         console.log(newResponse)
         lastResponse = agentMessageHistory[agentMessageHistory.length - 2];
-        console.log(lastResponse)
-        console.log(".");
+        // console.log(lastResponse)
+        // console.log(".");
       }
     }
 
   }
 
-  const addMessage = async () => {
-    if (agentId) {
-      const newMessageHistory = [...messages].push({ role: "user", content: [{ contentType: "text", value: newInputMessage }] })
-      const result = await addMessageToAgent(newInputMessage, agentId!!);
-      console.log(result)
-    }
-  }
-
+  
   return (
     <div className="flex flex-col h-screen w-full my-2">
       {!agentRunning && <Button className={"h-5 mb-5 w-1/4 mx-auto"} onClick={async () => await initializeAgent()}>Run agent</Button>}
@@ -81,10 +90,10 @@ export default function AgentChat() {
               messages.length == 0 &&
               <>
                 <LoadingSpinner></LoadingSpinner>
-                <p>Initializing EU AI Agent..</p>
+                <p className="text-center my-4">Initializing EU AI Agent..</p>
               </>
             }
-            {messages.map((message: any, index) => (
+            {messages != undefined && messages.map((message: any, index) => (
               <div
                 key={index}
                 className={`flex items-start gap-4 my-4 ${message.role === "assistant" ? "justify-end" : ""}`}
@@ -111,8 +120,8 @@ export default function AgentChat() {
           </div>
           <div className="bg-secondary border-t px-6 py-4">
             <div className="relative">
-              <Textarea placeholder="Type your message..." className="pr-16 w-full" rows={1} value={newInputMessage} />
-              <Button type="submit" size="icon" className="absolute top-1/2 -translate-y-1/2 right-4" onClick={async () => await addMessage()}>
+              <Textarea placeholder="Type your message..." className="pr-16 w-full" rows={1} value={newInputMessage} onChange={handleInputChange} />
+              <Button type="submit" size="icon" className="absolute top-1/2 -translate-y-1/2 right-4" onClick={async () => await handleSendMessage()}>
                 <SendIcon className="w-5 h-5" />
               </Button>
             </div>
