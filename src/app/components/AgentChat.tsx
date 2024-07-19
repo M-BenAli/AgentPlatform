@@ -141,8 +141,8 @@ export default function AgentChat() {
       )}
       {agentRunning && (
         <Button
-          variant={"destructive"}
-          className={" px-4 mx-auto mb-5 w-1/4"}
+          variant={"outline"}
+          className={" px-4 hover:bg-red-500 border-red-500 mx-auto mb-5 w-1/4"}
           onClick={() => setAgentRunning(false)}
         >
           Stop running agent

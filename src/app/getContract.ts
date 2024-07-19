@@ -1,7 +1,6 @@
 import { getContract } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
 import { client } from "./utils";
-import { readContract } from "thirdweb";
 
 const galadrielChain = defineChain({
   id: 696969,
