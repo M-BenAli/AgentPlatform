@@ -150,14 +150,14 @@ export default function AgentChat() {
       )}
 
       {agentRunning && (
-        <div className="bg-primary dark:bg-secondary w-3/4 mx-auto">
-          <header className="text-primary-foreground bg-green-500/85 py-4 px-6 ">
+        <div className=" border-green-500 border rounded-xl w-3/4 mx-auto">
+          <div className="text-primary-foreground bg-green-500/85 py-4 rounded-tr-xl rounded-tl-xl px-6 ">
             {/* <p>2. Interact with it via the AI agent</p> */}
             <h1 className="text-2xl text-center font-bold ">
               Talk to the agent
             </h1>
             <p className="text-white">{agentId}</p>
-          </header>
+          </div>
           <div className="flex-1 p-6 mx-auto">
             {messages.length == 0 && (
               <>
@@ -175,24 +175,23 @@ export default function AgentChat() {
                 >
                   {message.role === "assistant" ? (
                     <>
+                      <div>Agent:</div>
                       <div className="bg-primary text-primary-foreground p-4 rounded-lg max-w-[80%]">
-                        <p>{message.messages[0].value}</p>
+                        {message.messages[0].value}
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className="rounded-full bg-muted w-8 h-8 flex items-center justify-center text-muted-foreground">
-                        You
-                      </div>
-                      <div className="bg-card p-4 overflow-scroll rounded-lg max-w-[80%]">
-                        <p>{message.messages[0].value}</p>
+                      <div className="">You:</div>
+                      <div className="border p-4 overflow-auto rounded-lg max-w-[80%]">
+                        {message.messages[0].value}
                       </div>
                     </>
                   )}
                 </div>
               ))}
           </div>
-          <div className="bg-primary dark:bg-secondary border-t px-6 py-4">
+          <div className=" px-6 py-4">
             <div className="relative">
               <Textarea
                 placeholder="Type your message..."
