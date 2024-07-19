@@ -150,7 +150,7 @@ export default function AgentChat() {
       )}
 
       {agentRunning && (
-        <div className=" border-green-500 border rounded-xl w-3/4 mx-auto">
+        <div className=" border-green-500 border-2 rounded-xl w-3/4 mx-auto">
           <div className="text-primary-foreground bg-green-500/85 py-4 rounded-tr-xl rounded-tl-xl px-6 ">
             {/* <p>2. Interact with it via the AI agent</p> */}
             <h1 className="text-2xl text-center font-bold ">
@@ -183,7 +183,7 @@ export default function AgentChat() {
                   ) : (
                     <>
                       <div className="">You:</div>
-                      <div className="border p-4 overflow-auto rounded-lg max-w-[80%]">
+                      <div className="border-2 p-4 overflow-auto rounded-lg max-w-[80%]">
                         {message.messages[0].value}
                       </div>
                     </>
